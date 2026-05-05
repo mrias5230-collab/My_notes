@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduShare - Notes & Job Library</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            min-height: 100vh;
+        }
+
+        /* --- Header Navigation --- */
+        header {
+            background-color: #1e293b;
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #334155;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 800;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        nav {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background-color: #334155;
+            color: #38bdf8;
+        }
+
+        /* --- Main Layout --- */
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* --- Hero/Intro Banner --- */
+        .hero {
+            background: linear-gradient(135deg, #1e1b4b, #311042);
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            border: 1px solid #4338ca;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: #f1f5f9;
+        }
+
+        .hero p {
+            color: #cbd5e1;
+            font-size: 16px;
+        }
+
+        /* --- Grid & Cards Styling --- */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-color: #475569;
+        }
+
+        .badge {
+            background-color: #0369a1;
+            color: #e0f2fe;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 20px;
+            align-self: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+            color: #f1f5f9;
+        }
+
+        .card p {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .btn {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-success {
+            background-color: #059669;
+        }
+
+        .btn-success:hover {
+            background-color: #047857;
+        }
+
+        /* --- Share Notes Form Box --- */
+        .share-box {
+            background-color: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 35px;
+        }
+
+        .share-box h3 {
+            margin-bottom: 15px;
+            color: #38bdf8;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            padding: 10px;
+            border-radius: 6px;
+            color: white;
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            border-color: #38bdf8;
+        }
+
+        /* --- Online Book PDF Reader Modal --- */
+        .reader-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(15, 23, 42, 0.95);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .reader-content {
+            background-color: #1e293b;
+            width: 90%;
+            max-width: 800px;
+            height: 80vh;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+
+        .reader-header {
+            padding: 15px 20px;
+            background-color: #0f172a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        .close-reader {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .reader-body {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            color: #334155;
+            background-color: #f8fafc; /* Book page feel */
+            line-height: 1.8;
+            font-size: 16px;
+        }
+
+        .book-page-text {
+            color: #1e293b;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">✦ EduShare</div>
+        <nav>
+            <button class="nav-btn active" onclick="switchTab('notes')">Share & Find Notes</button>
+            <button class="nav-btn" onclick="switchTab('library')">Job Book Library</button>
+        </nav>
+    </header>
+
+    <main>
+
+        <div id="notes-section" class="section active">
+            <div class="hero">
+                <h2>Self-Study Notes Community</h2>
+                <p>Apne handwritten notes upload kariye ya doosre students ke free resources se padhiye.</p>
+            </div>
+
+            <div class="share-box">
+                <h3>Share Your Handwritten Notes</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="form-group">
+                        <label>Topic / Title</label>
+                        <input type="text" id="noteTitle" placeholder="e.g., UPSC History - Mughal Empire">
+                    </div>
+                    <div class="form-group">
+                        <label>Exam / Category</label>
+                        <select id="noteCategory">
+                            <option value="UPSC Civil Services">UPSC Civil Services</option>
+                            <option value="SSC Exams">SSC Exams</option>
+                            <option value="JEE / NEET">JEE / NEET</option>
+                            <option value="Software Development">Software Development</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Short Description (Keywords or syllabus details)</label>
+                    <textarea id="noteDesc" rows="2" placeholder="Describe what topics this PDF covers..."></textarea>
+                </div>
+                <button class="btn" onclick="uploadNote()">Upload Note (PDF/Doc)</button>
+            </div>
+
+            <h3 style="margin-bottom: 20px; font-size: 22px;">Recent Notes Uploaded</h3>
+            <div class="grid" id="notesGrid">
+                <div class="card">
+                    <div>
+                        <span class="badge" style="background-color: #6d28d9;">UPSC Civil Services</span>
+                        <h3>Indian Polity - Basic Structure</h3>
+                        <p>Complete handwritten notes covering Article 368, Kesavananda Bharati Case, and Amendments. Perfect for quick revision!</p>
+                    </div>
+                    <div class="card-footer">
+                        <span style="font-size: 12px; color: #64748b;">By: Amit K.</span>
+                        <button class="btn btn-success" onclick="openBook('Indian Polity - Basic Structure', 'Polity Notes: Constitution as per the Indian Judiciary comprises fundamental values that cannot be amended by Parliament. This document explains the doctrine of basic structure step-by-step with major case laws from 1973 to recent dates.')">Download PDF</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <span class="badge" style="background-color: #059669;">Software Development</span>
+                        <h3>Flutter & Dart - State Management</h3>
+                        <p>Detailed notes explaining Provider, Riverpod, and Bloc patterns with code examples for beginners.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span style="font-size: 12px; color: #64748b;">By: Rohan S.</span>
+                        <button class="btn btn-success" onclick="openBook('Flutter State Management', 'Flutter State Management Notes: State represents the data your application needs to rebuild UI. This guide covers Provider architecture, ChangeNotifier, Consumer, and MultiProvider concepts with clear state flowcharts.')">Download PDF</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="library-section" class="section">
+            <div class="hero" style="background: linear-gradient(135deg, #064e3b, #022c22); border-color: #059669;">
+                <h2>Digital Job Prep Library</h2>
+                <p>UPSC, SSC, Banking, aur Defence exams ki important standard reference books online hi padhein.</p>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <div>
+                        <span class="badge">UPSC / Civil Services</span>
+                        <h3>Indian Constitution & Polity</h3>
+                        <p>M. Laxmikanth's fundamental guide. Covers Executive, Legislature, Judiciary, and Local Governance systems in India.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span style="font-weight: bold; color: #38bdf8;">Free Access</span>
+                        <button class="btn" onclick="openBook('Indian Constitution & Polity', '<h2>Chapter 1: Historical Background</h2><p>The British came to India in 1608 as traders, in the form of East India Company, which had the exclusive right of trading in India under a charter granted by Queen Elizabeth I. In 1765, the Company, which till now had purely trading functions obtained the "diwani" (i.e., rights over revenue and civil justice) of Bengal, Bihar and Orissa.</p><br><h2>Chapter 2: Making of the Constitution</h2><p>It was in 1934 that the idea of a Constituent Assembly for India was put forward for the first time by M. N. Roy, a pioneer of communist movement in India. In 1935, the Indian National Congress (INC) for the first time, officially demanded a Constituent Assembly to frame the Constitution of India.</p>')">Buy & Read Online</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <span class="badge" style="background-color: #b45309;">Banking / SSC</span>
+                        <h3>Quantitative Aptitude</h3>
+                        <p>RS Aggarwal. Practice and shortcuts for Arithmetic, Algebra, Percentage, Profit & Loss, and Data Interpretation.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span style="font-weight: bold; color: #38bdf8;">Free Access</span>
+                        <button class="btn" onclick="openBook('Quantitative Aptitude', '<h2>Chapter 1: Number System</h2><p>Natural Numbers: Numbers used in counting objects are called natural numbers, denoted by N = {1, 2, 3, ...}.<br>Whole Numbers: Natural numbers including zero, denoted by W = {0, 1, 2, 3, ...}.</p><br><h2>Chapter 2: Profit & Loss Tricks</h2><p>Formula 1: Gain% = (Gain / Cost Price) * 100.<br>Formula 2: Selling Price (SP) = [(100 + Gain%) / 100] * CP. Remember, profit and loss percentages are always calculated on the Cost Price (CP) unless stated otherwise.</p>')">Buy & Read Online</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div>
+                        <span class="badge" style="background-color: #be185d;">UPSC / State PSC</span>
+                        <h3>History of Modern India</h3>
+                        <p>Bipan Chandra. Comprehensive story of Indian Freedom Struggle, Nationalist Movements, and the Partition.</p>
+                    </div>
+                    <div class="card-footer">
+                        <span style="font-weight: bold; color: #38bdf8;">Free Access</span>
+                        <button class="btn" onclick="openBook('History of Modern India', '<h2>Chapter 1: Decline of the Mughal Empire</h2><p>The great Mughal Empire, which had swayed the destinies of the subcontinent for nearly two centuries, began to disintegrate in the early part of the eighteenth century. The death of Aurangzeb in 1707 was followed by succession wars and rapid administrative decay.</p><br><h2>Chapter 2: The Revolt of 1857</h2><p>The 1857 Revolt began as a mutiny of sepoys of the East India Company\'s army on 10 May 1857, in the town of Meerut, and soon erupted into other mutinies and civilian rebellions chiefly in the upper Gangetic plain and central India.</p>')">Buy & Read Online</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <div id="readerModal" class="reader-modal">
+        <div class="reader-content">
+            <div class="reader-header">
+                <h3 id="readerBookTitle" style="color: #38bdf8;">Book Title</h3>
+                <button class="close-reader" onclick="closeReader()">✕</button>
+            </div>
+            <div class="reader-body">
+                <div class="book-page-text" id="readerBookContent">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab Switcher Logic
+        function switchTab(tabName) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (tabName === 'notes') {
+                document.getElementById('notes-section').classList.add('active');
+                event.target.classList.add('active');
+            } else {
+                document.getElementById('library-section').classList.add('active');
+                event.target.classList.add('active');
+            }
+        }
+
+        // Upload Notes Logic
+        function uploadNote() {
+            const title = document.getElementById('noteTitle').value.trim();
+            const category = document.getElementById('noteCategory').value;
+            const desc = document.getElementById('noteDesc').value.trim();
+
+            if (!title || !desc) {
+                alert("Please fill out Title and Description first!");
+                return;
+            }
+
+            const grid = document.getElementById('notesGrid');
+
+            // Creating a new notes card dynamically
+            const newCard = document.createElement('div');
+            newCard.className = "card";
+            newCard.innerHTML = `
+                <div>
+                    <span class="badge" style="background-color: #3b82f6;">${category}</span>
+                    <h3>${title}</h3>
+                    <p>${desc}</p>
+                </div>
+                <div class="card-footer">
+                    <span style="font-size: 12px; color: #64748b;">By: You (Self)</span>
+                    <button class="btn btn-success" onclick="openBook('${title}', '<h2>User Shared Note: ${title}</h2><p>${desc}</p>')">Download PDF</button>
+                </div>
+            `;
+
+            // Prepends/adds to top of list
+            grid.insertBefore(newCard, grid.firstChild);
+
+            // Reset inputs
+            document.getElementById('noteTitle').value = "";
+            document.getElementById('noteDesc').value = "";
+            alert("Congratulations! Aapka notes card list mein add ho gaya hai.");
+        }
+
+        // Reader Modal Controls
+        function openBook(title, content) {
+            document.getElementById('readerBookTitle').innerText = title;
+            document.getElementById('readerBookContent').innerHTML = content;
+            document.getElementById('readerModal').style.display = 'flex';
+        }
+
+        function closeReader() {
+            document.getElementById('readerModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
